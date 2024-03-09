@@ -1,0 +1,30 @@
+version: '3.7'
+
+volumes:
+  logging-db:
+
+services:
+  logging-postgres:
+    container_name: logging-db
+    image: postgres:15.1-alpine
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
+      - logging-db:/var/lib/postgresql/data
+    ports:
+      - "5482:5432"
+
+  test-logging-postgres:
+    container_name: test-logging-db
+    image: postgres:15.1-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: sa
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: test-logging-db
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5582:5432"
